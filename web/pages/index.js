@@ -20,6 +20,7 @@ export default function Home() {
     { id: 'latest-updates', title: '🔥 Latest Updates (Oct 25)', icon: Star },
     { id: 'getting-started', title: 'Getting Started', icon: BookOpen },
     { id: 'core-concepts', title: 'Core Concepts', icon: Layers },
+    { id: 'advanced-techniques', title: 'Advanced Techniques', icon: Zap },
     { id: 'widgets', title: 'Widgets & Components', icon: FileText },
     { id: 'data-sources', title: 'Data Sources', icon: Layers },
     { id: 'actions-triggers', title: 'Actions & Triggers', icon: Zap },
@@ -244,9 +245,9 @@ pageAccess: {
 
 ## 📚 Resources
 
-- [Official Release Notes](https://www.esri.com/en-us/arcgis/products/arcgis-experience-builder/overview)
-- [Migration Guide](https://community.esri.com/docs/migration)
-- [Accessibility Best Practices](https://www.esri.com/accessibility)
+- [Experience Builder Documentation](https://developers.arcgis.com/experience-builder/)
+- [Experience Builder Community](https://community.esri.com/t5/arcgis-experience-builder/ct-p/arcgis-experience-builder)
+- [ArcGIS Blog - Experience Builder Updates](https://www.esri.com/arcgis-blog/products/experience-builder/)
 
 > 💡 **Pro Tip**: Test all changes in a development environment before deploying to production!`
             }
@@ -383,6 +384,574 @@ Themes control appearance:
 - Grid of related items
 - Click to explore details
 - Used for: Resource libraries, project showcases`
+            }
+          ]
+        },
+        {
+          id: 'advanced-techniques',
+          title: 'Advanced Techniques',
+          description: 'Arcade, URL parameters, responsive design, and power features',
+          icon: '⚡',
+          content: [
+            {
+              id: 'advanced-guide',
+              content: `# Advanced Techniques
+
+*Everything you need to build sophisticated, professional applications*
+
+## 🎨 Using Arcade to Enhance Your Apps
+
+### What is Arcade?
+
+Arcade is Esri's expression language - think of it as "Excel formulas for maps." It lets you calculate values, format text, and make decisions on the fly without touching your source data.
+
+### Why Use Arcade in Experience Builder?
+
+**Real-World Example**: You have shelter capacity data, but you need to show:
+- "75% Full" instead of "75 out of 100"
+- Color coding: Green (available), Yellow (limited), Red (full)
+- Dynamic labels: "25 spaces remaining"
+
+Arcade does this **without** creating new fields in your data.
+
+### Common Arcade Use Cases
+
+#### 1. Dynamic Labeling
+
+**Scenario**: Show shelter status dynamically
+
+\`\`\`javascript
+// Calculate percentage and format nicely
+var total = $feature.total_capacity
+var occupied = $feature.current_occupancy
+var percent = Round((occupied / total) * 100)
+var available = total - occupied
+
+return \`\${percent}% Full - \${available} spaces available\`
+\`\`\`
+
+**Result**: "75% Full - 25 spaces available"
+
+#### 2. Conditional Styling
+
+**Scenario**: Color shelters by availability
+
+\`\`\`javascript
+var percent = ($feature.current_occupancy / $feature.total_capacity) * 100
+
+if (percent >= 90) {
+  return "critical"  // Red
+} else if (percent >= 75) {
+  return "limited"   // Yellow
+} else {
+  return "available" // Green
+}
+\`\`\`
+
+#### 3. Data Enrichment
+
+**Scenario**: Calculate distance without a new field
+
+\`\`\`javascript
+var userLocation = Geometry($dataContext.userCoordinates)
+var shelterLocation = Geometry($feature)
+var distanceMeters = Distance(userLocation, shelterLocation)
+var distanceKm = Round(distanceMeters / 1000, 1)
+
+return distanceKm + " km away"
+\`\`\`
+
+### Where to Use Arcade in Experience Builder
+
+1. **List Widget** - Custom attribute displays
+2. **Chart Widget** - Calculated values
+3. **Map Pop-ups** - Rich formatted content
+4. **Filter Widget** - Dynamic filter expressions
+5. **Text Widget** - Data-driven content
+
+### Step-by-Step: Adding Arcade to a Widget
+
+**Example: List Widget showing shelter status**
+
+1. **Open List Widget Settings**
+2. **Go to "Arrange"** tab
+3. **Click on a field** you want to customize
+4. **Select "Expression"** instead of field name
+5. **Click "New Expression"**
+6. **Write your Arcade code**:
+
+\`\`\`javascript
+// Get capacity data
+var total = $feature.total_capacity
+var current = $feature.current_occupancy
+var available = total - current
+var percent = Round((current / total) * 100)
+
+// Determine status
+var status =
+  When(
+    percent >= 90, "🔴 FULL",
+    percent >= 75, "🟡 LIMITED",
+    "🟢 AVAILABLE"
+  )
+
+// Return formatted string
+return status + " - " + available + " beds"
+\`\`\`
+
+7. **Name it**: "Shelter Status"
+8. **Click OK**
+
+**Result**: Each shelter shows: "🟢 AVAILABLE - 45 beds"
+
+### Arcade Quick Reference
+
+#### Common Functions
+
+\`\`\`javascript
+// Math
+Round(number, decimals)
+Ceil(number)
+Floor(number)
+Abs(number)
+
+// Text
+Concatenate(text1, text2)
+Upper(text)
+Lower(text)
+Replace(text, searchText, replacement)
+
+// Logic
+IIf(condition, trueValue, falseValue)
+When(condition1, value1, condition2, value2, defaultValue)
+
+// Geometry
+Distance(geometry1, geometry2)
+Area(polygon)
+Length(line)
+
+// Date
+Now()
+DateDiff(date1, date2, "days")
+Text(date, "MMM D, YYYY")
+\`\`\`
+
+### Humanitarian Examples
+
+#### Emergency Contact Display
+
+\`\`\`javascript
+var phone = $feature.emergency_phone
+var available = $feature.is_staffed
+
+return IIf(
+  available == "Yes",
+  "☎️ " + phone + " (STAFFED NOW)",
+  "☎️ " + phone + " (Message only)"
+)
+\`\`\`
+
+#### Resource Priority Indicator
+
+\`\`\`javascript
+var food = $feature.food_supply_days
+var water = $feature.water_supply_days
+var medical = $feature.medical_supply_days
+
+var critical = Min([food, water, medical])
+
+When(
+  critical < 2, "🔴 CRITICAL: " + critical + " days",
+  critical < 5, "🟡 LOW: " + critical + " days",
+  "🟢 ADEQUATE: " + critical + " days"
+)
+\`\`\`
+
+## 🔗 URL Parameters - Deep Linking & Bookmarkable Views
+
+### Why URL Parameters Matter
+
+**The Problem**: Users can't bookmark specific views
+- Can't share "Show all shelters in Dallas with availability"
+- Can't link directly to filtered maps
+- Can't pre-configure apps for specific scenarios
+
+**The Solution**: URL parameters let you set everything via URL
+
+### Basic URL Structure
+
+\`\`\`
+https://your-app.com/experience-id?param1=value1&param2=value2
+\`\`\`
+
+### Common URL Parameters
+
+#### 1. Set Initial Map Extent
+
+\`\`\`
+?center=-96.8,32.7&level=12
+\`\`\`
+
+**Use Case**: Link directly to disaster area
+\`\`\`
+?center=-90.0715,29.9511&level=11  // Hurricane zone
+\`\`\`
+
+#### 2. Pre-Apply Filters
+
+\`\`\`
+?filter=accessibility:wheelchair&filter=status:available
+\`\`\`
+
+**Use Case**: "Show only wheelchair-accessible available shelters"
+
+#### 3. Search for Specific Features
+
+\`\`\`
+?text=Red+Cross+Shelter
+\`\`\`
+
+#### 4. Enable Specific Widgets
+
+\`\`\`
+?enabledList=shelters,food-banks,medical
+\`\`\`
+
+### Creating Bookmarkable Views
+
+**Scenario**: Create links for different emergency scenarios
+
+#### Hurricane Preparation
+\`\`\`
+https://your-app.com?
+  center=-90.0715,29.9511&
+  level=10&
+  filter=shelter_type:hurricane&
+  filter=status:available&
+  enabledList=shelters
+\`\`\`
+
+#### Medical Emergency Response
+\`\`\`
+https://your-app.com?
+  center=-96.8,32.7&
+  level=12&
+  filter=service:medical&
+  filter=hours:24-hour&
+  enabledList=medical-facilities
+\`\`\`
+
+### Configuring Widgets to Accept URL Parameters
+
+#### Map Widget
+
+1. Open Map Widget settings
+2. Go to "Map Options" → "Initial View"
+3. Enable "Allow URL to override"
+4. Users can now use \`?center=X,Y&level=Z\`
+
+#### Filter Widget
+
+1. Open Filter Widget settings
+2. Enable "URL Parameters"
+3. Set parameter name: "filter"
+4. Now \`?filter=field:value\` works
+
+#### Search Widget
+
+1. Open Search Widget settings
+2. Enable "URL Parameters"
+3. Set parameter name: "text"
+4. Now \`?text=search+term\` works
+
+### Practical Implementation
+
+**Create a "Quick Links" page for your team**:
+
+\`\`\`html
+<!-- Emergency Response Quick Links -->
+<h3>Dallas Emergency Resources</h3>
+
+<a href="https://app.com?filter=type:shelter&filter=city:dallas">
+  Available Shelters in Dallas
+</a>
+
+<a href="https://app.com?filter=type:food&filter=open:now">
+  Food Banks Open Now
+</a>
+
+<a href="https://app.com?center=-96.8,32.7&level=15&filter=urgent:yes">
+  Critical Needs - Dallas County
+</a>
+\`\`\`
+
+## 📱 Responsive Design - One App, All Devices
+
+### The Mobile-First Approach
+
+Most disaster victims access information on phones. Design for mobile first, then enhance for desktop.
+
+### Key Responsive Principles
+
+#### 1. Size & Position Settings
+
+**For Each Widget**:
+- **Small (Phone)**: Stack vertically, full width
+- **Medium (Tablet)**: 2-column layout
+- **Large (Desktop)**: Multi-column, sidebars
+
+**Example: Shelter List Widget**
+
+| Device | Width | Position |
+|--------|-------|----------|
+| Phone | 100% | Top, below map |
+| Tablet | 50% | Right side |
+| Desktop | 30% | Fixed right panel |
+
+#### 2. Using REM Units
+
+**What are REM units?**
+- REM = "Root EM" - scales with user's font settings
+- Improves accessibility for vision-impaired users
+- Makes layouts more flexible
+
+**When to Use**:
+- Text: Always use REM
+- Spacing: Use REM for padding/margins
+- Fixed elements: Use pixels for borders
+
+**Example**:
+\`\`\`css
+font-size: 1rem;      /* Base text - scales */
+padding: 2rem;        /* Spacing - scales */
+border: 1px solid;    /* Fixed border */
+\`\`\`
+
+### Mobile-Optimized Widget Settings
+
+#### Map Widget
+- Enable "Mobile Pan/Zoom" for touch
+- Larger tap targets (minimum 44px)
+- Simplified basemap for faster loading
+
+#### List Widget
+- Reduce columns on mobile (1-2 max)
+- Larger text (1.2rem minimum)
+- Card layout instead of table
+
+#### Filter Widget
+- Collapsible on mobile
+- Large tap targets for selections
+- Clear, visible "Apply" button
+
+### Testing Responsive Design
+
+1. **Browser Tools**: Use Chrome DevTools (F12)
+   - Toggle device toolbar
+   - Test iPhone, iPad, Desktop sizes
+
+2. **Real Devices**: Always test on:
+   - iPhone (iOS)
+   - Android phone
+   - Tablet
+   - Desktop browser
+
+3. **Accessibility**: Test with:
+   - Screen reader (VoiceOver, NVDA)
+   - High contrast mode
+   - Large text settings
+
+## ♿ Comprehensive Accessibility Guide
+
+### Why Accessibility Matters in Humanitarian Work
+
+Disasters affect everyone, including people with disabilities. Your app MUST work for:
+- Vision impairments (screen readers, low vision)
+- Motor disabilities (keyboard-only navigation)
+- Cognitive disabilities (clear, simple interfaces)
+- Temporary disabilities (injured hands, bright sunlight)
+
+### The A11Y Panel
+
+**Location**: Bottom toolbar in Experience Builder
+
+**Key Settings**:
+
+#### 1. Screen Reader Text
+- Every widget needs a descriptive label
+- Not "Map" but "Emergency Shelter Locations Map"
+- Not "List" but "Available Shelters List with Capacity"
+
+#### 2. Focus Order
+- Set tab order to match visual importance
+- Critical actions first (search, filter)
+- Navigation follows logical flow
+
+#### 3. Announcements
+- Alert users to dynamic changes
+- "Filter applied: 5 shelters found"
+- "Map updated: Showing Dallas area"
+
+### Widget-Specific Accessibility
+
+#### Map Widget
+\`\`\`
+Screen Reader Text: "Interactive map showing emergency shelter locations. Use arrow keys to pan, plus/minus to zoom."
+Focus Order: 1
+Announce Updates: Yes
+\`\`\`
+
+#### Filter Widget
+\`\`\`
+Screen Reader Text: "Filter shelters by availability, accessibility features, and services. Use space to select options."
+Keyboard Shortcuts: Enter to apply, Escape to clear
+\`\`\`
+
+#### List Widget
+\`\`\`
+Screen Reader Text: "List of emergency shelters. Use arrow keys to navigate. Press Enter to view details."
+Row Headers: Yes
+Sortable: Yes (with keyboard)
+\`\`\`
+
+### Color Contrast Requirements
+
+**WCAG AA Standard** (minimum):
+- Normal text: 4.5:1 contrast
+- Large text (18pt+): 3:1 contrast
+- Interactive elements: 3:1 contrast
+
+**Testing**: Use browser contrast checker
+- Chrome: Lighthouse audit
+- Firefox: Accessibility inspector
+
+**Common Fixes**:
+- ❌ Light gray on white: 2.1:1 (fails)
+- ✅ Dark gray on white: 7:1 (passes)
+- ❌ Yellow on white: 1.8:1 (fails)
+- ✅ Dark orange on white: 4.6:1 (passes)
+
+### Keyboard Navigation Checklist
+
+- [ ] All widgets accessible via Tab key
+- [ ] Visible focus indicators
+- [ ] Enter/Space activates buttons
+- [ ] Escape closes dialogs
+- [ ] Arrow keys navigate lists
+- [ ] Skip links for repeated content
+
+### Screen Reader Best Practices
+
+1. **Meaningful Labels**:
+   - ❌ "Button 1"
+   - ✅ "Apply Filters and Search"
+
+2. **Status Messages**:
+   - ❌ Silent updates
+   - ✅ "Loading complete. 12 shelters found."
+
+3. **Error Messages**:
+   - ❌ Red text only
+   - ✅ "Error: Please select at least one filter option"
+
+## 🖨️ Printing & Reports
+
+### Basic Printing Setup
+
+1. Add **Print Widget** to your app
+2. Configure layout:
+   - Letter (8.5" x 11")
+   - Tabloid (11" x 17")
+   - Custom sizes
+
+3. Set print options:
+   - Include map at current extent
+   - Include attribute table
+   - Add title, date, legend
+
+### Custom Print Templates
+
+**Create in ArcGIS Pro**:
+
+1. Open ArcGIS Pro
+2. Create layout with your branding
+3. Add dynamic text elements
+4. Share as Print Service
+5. Connect to Experience Builder
+
+**Example Template Elements**:
+- Organization logo
+- "Shelter Status Report - {DATE}"
+- Map at current view
+- Table of features
+- Summary statistics
+- Emergency contact info
+
+### Generating Reports
+
+**Use Case**: Daily shelter capacity report
+
+**Setup**:
+1. Configure Near Me widget for analysis
+2. Add Table widget with selected features
+3. Add Chart widget showing trends
+4. Print widget with custom template
+5. Schedule or trigger manually
+
+**Result**: PDF report with:
+- Map showing all shelters
+- Table of capacity by location
+- Chart of occupancy trends
+- Automatically dated and branded
+
+## 💡 Pro Tips for Advanced Users
+
+### Performance Optimization
+
+1. **Limit Query Results**
+   - Set max records to 1,000
+   - Use extent-based filtering
+   - Enable clustering for dense data
+
+2. **Optimize Images**
+   - Compress logos/photos
+   - Use web-optimized formats (WebP)
+   - Lazy-load non-critical images
+
+3. **Reduce Widget Count**
+   - Each widget = HTTP request
+   - Combine functionality when possible
+   - Load widgets on-demand
+
+### Power User Shortcuts
+
+- **Ctrl + Z**: Undo
+- **Ctrl + C/V**: Copy/paste widgets
+- **Alt + Drag**: Duplicate widget
+- **Shift + Drag**: Constrain movement
+- **Delete**: Remove selected widget
+
+### Debugging Common Issues
+
+#### "Widget not loading data"
+1. Check data source connection
+2. Verify field names match
+3. Check filter expressions
+4. Review browser console (F12)
+
+#### "Actions not triggering"
+1. Verify source/target widgets
+2. Check message action configuration
+3. Test trigger event
+4. Review action chain order
+
+#### "Layout broken on mobile"
+1. Check size/position for small breakpoint
+2. Test in device mode (F12)
+3. Verify overflow settings
+4. Check parent container constraints
+
+> 💡 **Remember**: Advanced techniques make your apps more powerful, but always prioritize clarity and usability. The best app is one that works when people need it most.`
             }
           ]
         },
