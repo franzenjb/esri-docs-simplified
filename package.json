@@ -1,0 +1,33 @@
+{
+  "name": "esri-docs-simplified",
+  "version": "1.0.0",
+  "description": "Transform complex Esri documentation into clear, flowing websites",
+  "main": "index.js",
+  "scripts": {
+    "scrape": "node cli/scrape.js",
+    "process": "node processor/process.js",
+    "dev": "cd web && npm run dev",
+    "build": "cd web && npm run build",
+    "start": "cd web && npm run start",
+    "setup": "./setup.sh",
+    "full-pipeline": "npm run scrape && npm run process && npm run build"
+  },
+  "keywords": [
+    "esri",
+    "arcgis",
+    "documentation",
+    "experience-builder"
+  ],
+  "author": "Jeff Franzen",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cheerio": "^1.0.0",
+    "pdf-parse": "^1.1.1",
+    "openai": "^4.77.0",
+    "fs-extra": "^11.2.0",
+    "dotenv": "^16.4.5",
+    "marked": "^15.0.3",
+    "commander": "^12.1.0"
+  }
+}
