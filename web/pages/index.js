@@ -17,6 +17,7 @@ export default function Home() {
   // Navigation structure
   const navigation = [
     { id: 'home', title: 'Home', icon: HomeIcon },
+    { id: 'latest-updates', title: '🔥 Latest Updates (Oct 25)', icon: Star },
     { id: 'getting-started', title: 'Getting Started', icon: BookOpen },
     { id: 'core-concepts', title: 'Core Concepts', icon: Layers },
     { id: 'widgets', title: 'Widgets & Components', icon: FileText },
@@ -60,6 +61,197 @@ export default function Home() {
   const getDefaultContent = () => ({
     structure: {
       sections: [
+        {
+          id: 'latest-updates',
+          title: 'Latest Updates - October 25, 2024',
+          description: 'Breaking changes, new features, and important updates',
+          icon: '🔥',
+          content: [
+            {
+              id: 'october-updates',
+              content: `# Experience Builder Updates - October 25, 2024
+
+## ⚠️ Breaking Changes - Action Required
+
+> **CRITICAL**: These changes may break existing applications. Review and test immediately.
+
+### 1. Filter Widget - GlobalID/GUID Fields
+- **Change**: GlobalID and GUID fields no longer allow partial matches
+- **Impact**: Filters using these fields will only return exact matches
+- **Action**: Review and update any filters using GlobalID or GUID fields
+
+### 2. Search Widget - URL Parameters Renamed
+- **Old**: \`serviceEnabledList\` → **New**: \`enabledList\`
+- **Old**: \`searchText\` → **New**: \`text\`
+- **Impact**: Bookmarked searches and shared URLs will break
+- **Action**: Update all saved URLs and documentation
+
+## 💰 Credit Usage Warning
+
+> **BUSINESS ANALYST ALERT**: Creating, viewing, and exporting Infographics costs Credits - potentially more than you realize!
+
+### Credit Consumption Areas:
+- Creating Infographics in Business Analyst widget
+- Viewing Infographics (each view)
+- Exporting Infographics to PDF/Excel
+- **Recommendation**: Monitor credit usage closely or disable for public apps
+
+## 🎨 Major Theme System Revamp
+
+### What's New:
+- **Expanded Color Customization**: Beyond just Primary Color
+- **Google Fonts Integration**: Import fonts directly from Google Fonts library
+- **Accessibility Warnings**: Automatic alerts for unreadable text combinations
+- **New Controls**:
+  - Border radius settings
+  - Text input colors
+  - Link underline options (recommended for accessibility)
+
+### How to Use:
+1. Navigate to Theme settings
+2. Use Typography tab for font imports
+3. Check contrast warnings when changing colors
+4. Test with screen readers
+
+## ♿ Accessibility Improvements
+
+### New A11Y Panel
+- **Location**: Bottom bar of Builder
+- **Features**:
+  - Screen reader text configuration
+  - Priority settings for focus order
+  - Announcement customization
+
+### Widgets with New Accessibility:
+- Widget Controller
+- List Widget
+- Search Widget
+- Chronology, Frame, Preface, and Ribbon Templates
+
+## 🔒 Access Control Features
+
+### Page-Level Restrictions
+Configure page access based on:
+- **User Types**: Public, Organization, etc.
+- **Group Membership**: Specific teams only
+- **Admin Override**: Administrators bypass all restrictions
+
+### Implementation:
+\`\`\`javascript
+// In General Settings
+pageAccess: {
+  userTypes: ['Organization'],
+  groups: ['Emergency Response Team'],
+  adminOverride: true
+}
+\`\`\`
+
+## 🆕 New Widgets
+
+### 1. Image Collection Explorer
+- View Dynamic Imagery Layers
+- Create new Imagery Layers
+- **Use Case**: Satellite imagery analysis for disaster assessment
+
+### 2. Login Widget
+- User authentication interface
+- Configurable sign-out redirect
+- **Use Case**: Secure internal dashboards
+
+## 🔧 Enhanced Widget Features
+
+### Map Widget
+- **Zoom Level Restrictions**: Prevent users from zooming too far in/out
+- **Scale Bar Styles**: Multiple display options
+- **URL Parameters**: Set initial zoom level via URL
+- **Locate Tool Integration**: Can trigger Near Me widget
+
+### Edit Widget - Full Feature Parity
+- **Batch Editing**: Edit multiple features at once
+- **Split Tool**: Divide features
+- **Merge Tool**: Combine features
+- **Status**: Complete functional parity with WebAppBuilder!
+
+### Table Widget Improvements
+- **Bulk Configuration**: Apply settings to all layers
+- **Map Extent Restrictions**: Show only visible features
+- **Display Options**: Choose scrolling vs pagination
+- **Sticky Rows**: Pin headers/footers
+
+### Near Me Widget
+- **Calculate Geometry**: Get length/area of intersecting features
+- **Export Support**: Download results
+- **Use Case**: "Show all shelters within 5km and their capacity"
+
+### Filter Widget Enhancements
+- **URL Parameter Support**: Set filters via URL
+- **Expanded List Input**: Better UI for multiple selections
+- **Pill Selector**: Visual tag-based selection
+
+### Chart Widget - Time Intelligence
+- **Rolling Windows**: Intervals aligned to first/last data point
+- **Calendar-Based Units**: Standard time periods
+- **Label Preferences**: Sort by alias or field name
+
+## 🎯 UI/UX Improvements
+
+### Window Management
+- **Resizable Windows**: Drag to resize
+- **Nested Widget Controllers**: Controllers within controllers
+- **Customizable Sizing**: Button size, icon size, spacing
+
+### Grid Widget
+- **Insert Before/After**: Easier widget placement
+- **Visual Guides**: Better alignment tools
+
+### Map Layers
+- **Runtime Removal**: Remove layers dynamically
+- **Auto-Expansion**: Group layers expand in search results
+- **Mosaic Sub-layers**: Customize individual layers
+
+## 🚀 Quick Implementation Guide
+
+### For Humanitarian Organizations:
+
+1. **Update Authentication**:
+   - Add Login widget for secure access
+   - Configure page restrictions for sensitive data
+
+2. **Enhance Accessibility**:
+   - Enable A11Y panel settings
+   - Test with screen readers
+   - Verify color contrast
+
+3. **Optimize Performance**:
+   - Use new Table pagination for large datasets
+   - Enable Map zoom restrictions
+   - Configure Filter URL parameters for bookmarkable views
+
+4. **Monitor Costs**:
+   - Review Business Analyst usage
+   - Disable credit-consuming features for public apps
+   - Set up usage alerts
+
+## 📋 Migration Checklist
+
+- [ ] Review and update Filter widgets using GlobalID/GUID
+- [ ] Update bookmarked URLs with new Search parameters
+- [ ] Test theme changes with accessibility warnings
+- [ ] Configure page access restrictions
+- [ ] Enable new accessibility features
+- [ ] Review Business Analyst credit usage
+- [ ] Test in multiple browsers and devices
+
+## 📚 Resources
+
+- [Official Release Notes](https://www.esri.com/en-us/arcgis/products/arcgis-experience-builder/overview)
+- [Migration Guide](https://community.esri.com/docs/migration)
+- [Accessibility Best Practices](https://www.esri.com/accessibility)
+
+> 💡 **Pro Tip**: Test all changes in a development environment before deploying to production!`
+            }
+          ]
+        },
         {
           id: 'getting-started',
           title: 'Getting Started',
