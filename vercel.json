@@ -3,10 +3,5 @@
   "outputDirectory": "web/.next",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "functions": {
-    "web/pages/api/*.js": {
-      "maxDuration": 10
-    }
-  }
+  "regions": ["iad1"]
 }
