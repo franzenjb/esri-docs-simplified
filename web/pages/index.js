@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { marked } from 'marked';
 import {
-  Menu, X, Search, BookOpen, Home, Layers,
+  Menu, X, Search, BookOpen, Home as HomeIcon, Layers,
   Zap, Globe, Heart, ChevronRight, ExternalLink,
   FileText, Download, Star
 } from 'lucide-react';
@@ -16,7 +16,7 @@ export default function Home() {
 
   // Navigation structure
   const navigation = [
-    { id: 'home', title: 'Home', icon: Home },
+    { id: 'home', title: 'Home', icon: HomeIcon },
     { id: 'getting-started', title: 'Getting Started', icon: BookOpen },
     { id: 'core-concepts', title: 'Core Concepts', icon: Layers },
     { id: 'widgets', title: 'Widgets & Components', icon: FileText },
@@ -37,7 +37,14 @@ export default function Home() {
       const response = await fetch('/content/content.json');
       if (response.ok) {
         const data = await response.json();
-        setContent(data);
+        // Check if the loaded content has all necessary sections
+        // If not, use default content
+        if (data?.structure?.sections?.length > 1) {
+          setContent(data);
+        } else {
+          // Content is incomplete, use default
+          setContent(getDefaultContent());
+        }
       } else {
         // Use default content if processed content not available
         setContent(getDefaultContent());
@@ -184,6 +191,282 @@ Themes control appearance:
 - Grid of related items
 - Click to explore details
 - Used for: Resource libraries, project showcases`
+            }
+          ]
+        },
+        {
+          id: 'widgets',
+          title: 'Widgets & Components',
+          description: 'Learn about available widgets and how to use them',
+          icon: '🧩',
+          content: [
+            {
+              id: 'widgets-guide',
+              content: `# Widgets & Components Guide
+
+## Essential Widgets for Humanitarian Apps
+
+### Map Widget
+The foundation of any geographic application. Shows your data on an interactive map.
+
+**Key Settings:**
+- **Initial Extent**: Set to your area of operations
+- **Basemap**: Choose appropriate for your region (satellite for rural, streets for urban)
+- **Pop-ups**: Configure to show essential information only
+
+### List Widget
+Displays your data in a searchable, sortable table format.
+
+**Best for:**
+- Shelter inventories
+- Resource tracking
+- Beneficiary lists
+
+### Chart Widget
+Visualizes statistics and trends in your data.
+
+**Common Uses:**
+- Resource distribution over time
+- Population demographics
+- Incident reports by category
+
+### Filter Widget
+Allows users to narrow down data based on criteria.
+
+**Example Filters:**
+- Wheelchair accessible shelters only
+- Resources within 5km radius
+- Services available today
+
+### Text Widget
+Adds context, instructions, and information.
+
+**Tips:**
+- Keep text concise
+- Use bullet points for clarity
+- Include emergency contact info
+
+## Widget Interactions
+
+### Connecting Widgets
+Make widgets work together:
+1. Click on shelter in map → Highlights in list
+2. Select date range in filter → Updates all widgets
+3. Hover on chart segment → Shows related map points
+
+### Mobile Optimization
+- Stack widgets vertically on mobile
+- Use collapsible panels for secondary info
+- Ensure touch targets are at least 44px
+- Test on actual devices, not just browser
+
+## Performance Tips
+- Limit visible features to improve speed
+- Use clustering for dense point data
+- Enable lazy loading for lists
+- Cache static data when possible`
+            }
+          ]
+        },
+        {
+          id: 'data-sources',
+          title: 'Data Sources',
+          description: 'Connect and manage your data',
+          icon: '📊',
+          content: [
+            {
+              id: 'data-guide',
+              content: `# Working with Data Sources
+
+## Quick Start with CSV Files
+
+The fastest way to get data into Experience Builder:
+
+1. **Prepare Your CSV**
+   - First row must be column headers
+   - Include latitude/longitude for map points
+   - Keep file under 10MB for best performance
+
+2. **Upload to ArcGIS Online**
+   - Drag and drop your CSV
+   - Choose field types (text, number, date)
+   - Enable editing if field updates needed
+
+3. **Connect to Experience Builder**
+   - Add data source in app
+   - Select your uploaded layer
+   - Configure refresh interval if needed
+
+## Data Types Explained
+
+### Feature Layers
+Your primary data storage - think of it as a smart spreadsheet with location.
+
+### Map Services
+Pre-styled map data ready to display.
+
+### CSV/Excel Files
+Simple tabular data that can be geocoded.
+
+### Live Feeds
+Real-time data from sensors or APIs.
+
+## Data Best Practices
+
+### For Emergency Response
+- Update critical data at least hourly
+- Include timestamp fields
+- Maintain data backup strategy
+- Document data sources and update frequency
+
+### Field Data Collection
+- Use Survey123 for structured collection
+- Enable offline sync for poor connectivity
+- Validate data entry at source
+- Include photo attachments when helpful
+
+### Data Security
+- Control sharing settings appropriately
+- Anonymize sensitive beneficiary data
+- Use groups for team access
+- Regular audit of data access logs`
+            }
+          ]
+        },
+        {
+          id: 'actions-triggers',
+          title: 'Actions & Triggers',
+          description: 'Make your apps interactive',
+          icon: '⚡',
+          content: [
+            {
+              id: 'actions-guide',
+              content: `# Actions & Triggers Explained
+
+## Understanding the Basics
+
+**Trigger**: Something that happens (user clicks, data loads, time passes)
+**Action**: What your app does in response (zoom map, filter list, show message)
+
+## Common Patterns
+
+### Click to Select
+**Trigger**: User clicks feature on map
+**Action**:
+- Highlight the selected feature
+- Show details panel
+- Zoom to feature extent
+
+### Auto-Refresh Dashboard
+**Trigger**: Timer (every 5 minutes)
+**Action**:
+- Refresh data sources
+- Update statistics
+- Show last updated timestamp
+
+### Linked Navigation
+**Trigger**: Select item in list
+**Action**:
+- Pan map to item location
+- Flash the feature
+- Update related charts
+
+## Setting Up Actions
+
+1. Select your trigger widget
+2. Choose "Add Action"
+3. Pick trigger event (click, hover, load)
+4. Select target widget
+5. Choose action type
+6. Configure action settings
+
+## Troubleshooting Actions
+
+**Actions not working?**
+- Check data source is properly connected
+- Verify field names match
+- Test in preview mode
+- Check browser console for errors
+
+**Performance issues?**
+- Reduce number of simultaneous actions
+- Use debounce for frequent triggers
+- Limit data queried by actions`
+            }
+          ]
+        },
+        {
+          id: 'deployment',
+          title: 'Deployment',
+          description: 'Share your applications',
+          icon: '🌍',
+          content: [
+            {
+              id: 'deployment-guide',
+              content: `# Deployment Guide
+
+## Publishing Your App
+
+### 1. Final Checks
+Before deploying:
+- ✓ Test all functionality
+- ✓ Verify mobile responsiveness
+- ✓ Check load times
+- ✓ Review sharing permissions
+- ✓ Update documentation
+
+### 2. Publish Settings
+- **Title**: Clear, descriptive name
+- **Description**: What the app does and who should use it
+- **Tags**: Include "humanitarian", "emergency", your org name
+- **Thumbnail**: Representative screenshot
+
+### 3. Sharing Options
+
+**Public**: Anyone can access
+- Good for public information portals
+- Awareness campaigns
+- Community resources
+
+**Organization**: Your ArcGIS org members only
+- Internal dashboards
+- Operational tools
+- Sensitive data applications
+
+**Groups**: Specific teams
+- Partner coordination
+- Project-specific tools
+- Limited stakeholder access
+
+## URL Management
+
+### Custom URL
+Instead of: \`arcgis.com/apps/experiencebuilder/experience/?id=abc123\`
+Create: \`yourorg.maps.arcgis.com/apps/shelter-tracker\`
+
+### Embedding
+Add to your website:
+\`\`\`html
+<iframe src="your-app-url"
+        width="100%"
+        height="600"
+        frameborder="0">
+</iframe>
+\`\`\`
+
+## Maintenance
+
+### Regular Updates
+- Weekly: Check data freshness
+- Monthly: Review usage analytics
+- Quarterly: Gather user feedback
+- Yearly: Major feature updates
+
+### Monitoring
+- Set up alerts for data failures
+- Track performance metrics
+- Monitor user feedback
+- Document known issues`
             }
           ]
         },
@@ -359,7 +642,7 @@ Themes control appearance:
                     <div className="flex-1">
                       <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
                       <p className="text-gray-600 text-sm">
-                        {section?.description || 'Explore this topic'}
+                        {section?.description || 'Begin your journey with Experience Builder'}
                       </p>
                       <div className="mt-4 flex items-center text-esri-blue font-medium">
                         Explore <ChevronRight className="ml-1 w-4 h-4" />
@@ -401,7 +684,14 @@ Themes control appearance:
 
     const section = content?.structure?.sections?.find(s => s.id === activeSection);
     if (!section) {
-      return <div>Section not found</div>;
+      console.log('Active section:', activeSection);
+      console.log('Available sections:', content?.structure?.sections?.map(s => s.id));
+      return (
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-semibold text-gray-700 mb-4">Loading content...</h2>
+          <p className="text-gray-500">Please select a section from the menu</p>
+        </div>
+      );
     }
 
     return (
