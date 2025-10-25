@@ -1260,18 +1260,17 @@ Before deploying:
 ## URL Management
 
 ### Custom URL
-Instead of: \`arcgis.com/apps/experiencebuilder/experience/?id=abc123\`
-Create: \`yourorg.maps.arcgis.com/apps/shelter-tracker\`
+Instead of: arcgis.com/apps/experiencebuilder/experience/?id=abc123
+Create: yourorg.maps.arcgis.com/apps/shelter-tracker
 
 ### Embedding
 Add to your website:
-\`\`\`html
+html
 <iframe src="your-app-url"
         width="100%"
         height="600"
         frameborder="0">
 </iframe>
-\`\`\`
 
 ## Maintenance
 
