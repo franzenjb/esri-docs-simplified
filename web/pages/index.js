@@ -12,6 +12,7 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState('home');
   const [content, setContent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Navigation structure
@@ -32,6 +33,63 @@ export default function Home() {
   useEffect(() => {
     loadContent();
   }, []);
+
+  // Search function
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+
+    if (!query.trim() || !content?.structure?.sections) {
+      setSearchResults([]);
+      return;
+    }
+
+    const searchTerm = query.toLowerCase();
+    const results = [];
+
+    content.structure.sections.forEach(section => {
+      // Search in section title and description
+      const titleMatch = section.title.toLowerCase().includes(searchTerm);
+      const descMatch = section.description?.toLowerCase().includes(searchTerm);
+
+      // Search in section content
+      section.content?.forEach(item => {
+        const contentText = item.content || '';
+        const contentLower = contentText.toLowerCase();
+
+        if (titleMatch || descMatch || contentLower.includes(searchTerm)) {
+          // Find context snippet
+          const index = contentLower.indexOf(searchTerm);
+          let snippet = '';
+
+          if (index !== -1) {
+            const start = Math.max(0, index - 50);
+            const end = Math.min(contentText.length, index + searchTerm.length + 50);
+            snippet = contentText.substring(start, end);
+
+            // Clean up markdown and formatting
+            snippet = snippet
+              .replace(/[#*`]/g, '')
+              .replace(/\n/g, ' ')
+              .trim();
+
+            if (start > 0) snippet = '...' + snippet;
+            if (end < contentText.length) snippet = snippet + '...';
+          } else if (titleMatch || descMatch) {
+            snippet = section.description || section.title;
+          }
+
+          results.push({
+            sectionId: section.id,
+            sectionTitle: section.title,
+            snippet: snippet,
+            icon: section.icon
+          });
+        }
+      });
+    });
+
+    setSearchResults(results);
+  };
 
   const loadContent = async () => {
     try {
@@ -1531,29 +1589,83 @@ Add to your website:
             placeholder="Search documentation..."
             className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-esri-blue"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSearchResults([]);
+              }}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
 
-        {/* Navigation */}
-        <nav className="space-y-1">
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            return (
-              <div
-                key={item.id}
-                onClick={() => {
-                  setActiveSection(item.id);
-                  setSidebarOpen(false);
-                }}
-                className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
-              >
-                <Icon className="w-5 h-5" />
-                <span>{item.title}</span>
-              </div>
-            );
-          })}
-        </nav>
+        {/* Search Results */}
+        {searchResults.length > 0 && (
+          <div className="mb-6 max-h-96 overflow-y-auto">
+            <div className="text-sm font-semibold text-gray-700 mb-2">
+              {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
+            </div>
+            <div className="space-y-2">
+              {searchResults.map((result, index) => (
+                <div
+                  key={`${result.sectionId}-${index}`}
+                  onClick={() => {
+                    setActiveSection(result.sectionId);
+                    setSearchQuery('');
+                    setSearchResults([]);
+                    setSidebarOpen(false);
+                  }}
+                  className="p-3 bg-white border border-gray-200 rounded-lg hover:border-esri-blue cursor-pointer transition-colors"
+                >
+                  <div className="flex items-center space-x-2 mb-1">
+                    <span className="text-lg">{result.icon}</span>
+                    <span className="font-semibold text-sm text-gray-900">
+                      {result.sectionTitle}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 line-clamp-2">
+                    {result.snippet}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Show message when search has no results */}
+        {searchQuery && searchResults.length === 0 && (
+          <div className="mb-6 p-4 bg-gray-50 rounded-lg text-center">
+            <p className="text-sm text-gray-600">No results found for "{searchQuery}"</p>
+            <p className="text-xs text-gray-500 mt-1">Try different keywords</p>
+          </div>
+        )}
+
+        {/* Navigation - Only show when not searching */}
+        {!searchQuery && (
+          <nav className="space-y-1">
+            {navigation.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setSidebarOpen(false);
+                  }}
+                  className={`nav-item ${activeSection === item.id ? 'active' : ''}`}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span>{item.title}</span>
+                </div>
+              );
+            })}
+          </nav>
+        )}
 
         {/* Resources */}
         <div className="mt-8 pt-8 border-t border-gray-200">
